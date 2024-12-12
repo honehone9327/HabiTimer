@@ -4,9 +4,9 @@
   "type": "module",
   "license": "MIT",
   "scripts": {
-    "dev": "tsx watch --clear-screen=false --exclude vite.config.ts.* server/index.ts",
+    "dev": "vite",
     "build": "vite build",
-    "start": "NODE_ENV=production node dist/index.js",
+    "start": "npx serve client/dist",
     "check": "tsc",
     "db:push": "drizzle-kit push"
   },

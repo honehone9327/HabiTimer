@@ -1,7 +1,7 @@
 import express, { type Express, Request, Response, NextFunction } from "express";
 import { eq } from "drizzle-orm";
-import { users } from "@db/schema";
-import { db } from "db";
+import { users } from "../db/schema";
+import { db } from "../db";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import multer from "multer";
