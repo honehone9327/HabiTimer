@@ -51,10 +51,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         id: newUser.id,
         email: newUser.email,
         name: newUser.name,
-        points: newUser.points,
-        plan_type: newUser.plan_type,
-        subscription_plan: newUser.subscription_plan,
-        billing_cycle: newUser.billing_cycle
+        points: newUser.points
       }
     });
   } catch (error) {

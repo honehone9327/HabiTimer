@@ -41,10 +41,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         email: user.email,
         name: user.name,
         points: user.points,
-        plan_type: user.plan_type,
-        avatar_url: user.avatar_url,
-        subscription_plan: user.subscription_plan,
-        billing_cycle: user.billing_cycle
+        avatar_url: user.avatar_url
       }
     });
   } catch (error) {
