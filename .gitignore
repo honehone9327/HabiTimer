@@ -1,6 +1,54 @@
-node_modules
-dist
+# Dependencies
+node_modules/
+.pnp/
+.pnp.js
+
+# Production
+/dist/
+/build/
+
+# Testing
+/coverage/
+
+# Environment
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# IDEs and Editors
+.idea/
+.vscode/
+*.swp
+*.swo
 .DS_Store
-server/public
+
+# Debug Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Vercel
+.vercel/
+
+# Project Specific
+server/public/
 vite.config.ts.*
 *.tar.gz
+
+# Database
+*.sqlite
+*.db
+
+# Temporary Files
+*.tmp
+*.temp
+.cache
+
+# Server-side Code (Vercel Deployment)
+# Exclude all server and db directories except the api directory
+/server/
+/db/
+!/api/**/*
+*.log
