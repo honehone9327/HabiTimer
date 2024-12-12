@@ -46,10 +46,12 @@ vite.config.ts.*
 *.temp
 .cache
 # Server-side code (Vercel deployment)
-/server
-/db
-!api
+/server/**/*
+/db/**/*
+!/api/**/*
 .env.*
 *.log
 dist/
 build/
+node_modules/
+.vercel/
