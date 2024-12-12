@@ -1,37 +1,36 @@
 {
-  "version": 2,
-  "builds": [
-    {
-      "src": "api/**/*.ts",
-      "use": "@vercel/node",
-      "config": {
-        "maxLambdaSize": "50mb"
+    "version": 2,
+    "builds": [
+      {
+        "src": "api/**/*.ts",
+        "use": "@vercel/node",
+        "config": { "maxLambdaSize": "50mb" }
+      },
+      {
+        "src": "client/package.json",
+        "use": "@vercel/static-build",
+        "config": {
+          "distDir": "client/dist"
+        }
       }
-    },
-    {
-      "src": "client/package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "client/dist"
+    ],
+    "routes": [
+      {
+        "src": "/api/(.*)",
+        "dest": "/api/$1.ts"
+      },
+      {
+        "src": "/(.*)",
+        "dest": "/client/dist/$1"
+      },
+      {
+        "src": "/(.*)",
+        "dest": "/client/dist/index.html"
       }
+    ],
+    "env": {
+      "DATABASE_URL": "@database_url",
+      "JWT_SECRET": "@jwt_secret"
     }
-  ],
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "/api/$1.ts"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/client/dist/$1"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/client/dist/index.html"
-    }
-  ],
-  "env": {
-    "DATABASE_URL": "@database_url",
-    "JWT_SECRET": "@jwt_secret"
   }
-}
+  
