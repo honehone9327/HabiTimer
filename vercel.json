@@ -10,6 +10,12 @@
           "installCommand": "npm install"
         }
       }
+    ],
+    "routes": [
+      {
+        "src": "/(.*)",
+        "dest": "client/dist/index.html"
+      }
     ]
   }
   
