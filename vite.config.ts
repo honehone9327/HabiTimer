@@ -6,8 +6,9 @@ import checker from "vite-plugin-checker";
 import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal";
 
 const __dirname = import.meta.dirname;
+
 export default defineConfig({
-  base: './',
+  // baseは指定しない: デフォルトの'/'を利用し、絶対パスでビルド
   plugins: [
     react(),
     checker({ typescript: true, overlay: false }),
@@ -20,10 +21,8 @@ export default defineConfig({
       "@db": path.resolve(__dirname, "db"),
     },
   },
-  // rootをclientに指定
   root: path.resolve(__dirname, "client"),
   build: {
-    // outDirを"dist"に指定することで、clientディレクトリ内にdistフォルダが作られる
     outDir: "dist",
     emptyOutDir: true,
   },
