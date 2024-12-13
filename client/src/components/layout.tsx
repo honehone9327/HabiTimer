@@ -16,14 +16,29 @@ export const Header = () => {
             HabiTimer Pro
           </a>
         </Link>
-        {/* Temporarily hidden user navigation
-        <nav className="flex items-center gap-4">
-          <Link href="/mypage">
-            <a className="text-gray-600 hover:text-gray-900">
-              <User className="w-6 h-6" />
-            </a>
-          </Link>
-        </nav>
+        {/* Temporarily hidden user avatar and mypage link
+        {location !== "/auth" && (
+          <div className="absolute right-4">
+            <Link href="/mypage">
+              <div 
+                className="w-10 h-10 rounded-full hover:bg-gray-100 transition-colors cursor-pointer overflow-hidden flex items-center justify-center"
+              >
+                {user?.avatar_url ? (
+                  <img
+                    src={user.avatar_url}
+                    className="w-full h-full rounded-full object-cover"
+                    aria-hidden="true"
+                  />
+                ) : (
+                  <User 
+                    className="w-8 h-8 text-gray-600"
+                    aria-hidden="true"
+                  />
+                )}
+              </div>
+            </Link>
+          </div>
+        )}
         */}
       </div>
     </header>
