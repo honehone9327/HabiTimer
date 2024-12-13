@@ -60,7 +60,7 @@ interface WorkoutState {
   selectedExercise: string | null;
   trainerMode: string;
   currentMessage: string;
-  timerId: number | null;
+  timerId: NodeJS.Timeout | null;
   showCompletionDialog: boolean;
   
   setExerciseTime: (time: number) => void;
@@ -133,7 +133,7 @@ export const useWorkoutStore = create<WorkoutState>()(
               currentState.tick();
             }
           }, 1000);
-          set({ isRunning: true, isTimerStarted: true, timerId: id as unknown as number });
+          set({ isRunning: true, isTimerStarted: true, timerId: id });
         }
       },
 
@@ -141,11 +141,12 @@ export const useWorkoutStore = create<WorkoutState>()(
         const state = get();
         if (state.timerId) {
           clearInterval(state.timerId);
+          // Clear the timer ID immediately to prevent any race conditions
+          set({ timerId: null });
         }
         set((state) => ({
           isRunning: false,
           isTimerStarted: false,
-          timerId: null,
           currentSet: 1,
           isRest: false,
           remainingTime: state.exerciseTime,
