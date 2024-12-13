@@ -60,7 +60,7 @@ interface WorkoutState {
   selectedExercise: string | null;
   trainerMode: string;
   currentMessage: string;
-  timerId: NodeJS.Timeout | null;
+  timerId: number | null; // 修正箇所
   showCompletionDialog: boolean;
   
   setExerciseTime: (time: number) => void;
@@ -101,7 +101,7 @@ export const useWorkoutStore = create<WorkoutState>()(
       selectedExercise: null,
       trainerMode: 'friendly',
       currentMessage: 'トレーニングを始めましょう！',
-      timerId: null,
+      timerId: null, // 初期値は null
       showCompletionDialog: false,
 
       setExerciseTime: (time) => set({ exerciseTime: time, remainingTime: time }),
@@ -118,7 +118,7 @@ export const useWorkoutStore = create<WorkoutState>()(
       toggleTimer: () => {
         const state = get();
         if (state.isRunning) {
-          if (state.timerId) {
+          if (state.timerId !== null) {
             clearInterval(state.timerId);
           }
           set({ 
@@ -126,7 +126,7 @@ export const useWorkoutStore = create<WorkoutState>()(
             timerId: null 
           });
         } else {
-          const id = setInterval(() => {
+          const id = window.setInterval(() => { // window.setIntervalを使用
             const currentState = get();
             if (currentState.remainingTime > 0) {
               currentState.tick();
@@ -145,7 +145,7 @@ export const useWorkoutStore = create<WorkoutState>()(
 
       resetTimer: () => {
         const state = get();
-        if (state.timerId) {
+        if (state.timerId !== null) {
           clearInterval(state.timerId);
           // Clear the timer ID immediately to prevent any race conditions
           set({ timerId: null });
@@ -166,7 +166,7 @@ export const useWorkoutStore = create<WorkoutState>()(
 
       switchMode: () => set((state) => {
         if (state.currentSet >= state.sets && !state.isRest) {
-          if (state.timerId) {
+          if (state.timerId !== null) {
             clearInterval(state.timerId);
           }
           return {

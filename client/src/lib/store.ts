@@ -35,7 +35,7 @@ interface PomodoroState {
   displayMode: 'audio' | 'video';
   tasks: Task[];
   points: number;
-  timerId: NodeJS.Timeout | null;
+  timerId: number | null; // 修正箇所
   audioElement: HTMLAudioElement | null;
   timerHistory: TimerHistory[];
   isTimerCompleted: boolean;
@@ -102,7 +102,7 @@ export const useStore = create<PomodoroState>()(
       displayMode: 'audio' as const,
       tasks: [],
       points: 0,
-      timerId: null,
+      timerId: null, // 初期値は null
       audioElement: null,
       timerHistory: [],
       isTimerCompleted: false,
@@ -139,7 +139,7 @@ export const useStore = create<PomodoroState>()(
         const state = get();
         console.log('Toggling timer. Current state:', state.isRunning);
         if (state.isRunning) {
-          if (state.timerId) {
+          if (state.timerId !== null) {
             clearInterval(state.timerId);
           }
           set({
@@ -147,7 +147,7 @@ export const useStore = create<PomodoroState>()(
             timerId: null,
           });
         } else {
-          const id = setInterval(() => {
+          const id = window.setInterval(() => { // window.setIntervalを使用
             const currentState = get();
             if (currentState.remainingTime > 0) {
               currentState.tick();
@@ -166,7 +166,7 @@ export const useStore = create<PomodoroState>()(
       resetTimer: () => {
         const state = get();
         console.log('Resetting timer');
-        if (state.timerId) {
+        if (state.timerId !== null) {
           clearInterval(state.timerId);
         }
         set({
@@ -194,7 +194,7 @@ export const useStore = create<PomodoroState>()(
         if (state.currentSet >= state.sets && !state.isBreak) {
           state.addPoints(50);
           state.addTimerHistory();
-          if (state.timerId) {
+          if (state.timerId !== null) {
             clearInterval(state.timerId);
           }
           return {
@@ -337,7 +337,7 @@ export const useStore = create<PomodoroState>()(
 
       resetAllTimerStates: () => {
         const state = get();
-        if (state.timerId) {
+        if (state.timerId !== null) {
           clearInterval(state.timerId);
         }
         set({
