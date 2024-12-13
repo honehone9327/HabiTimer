@@ -39,24 +39,26 @@ const ProtectedRoute = ({ component: Component }: { component: React.ComponentTy
 function Router() {
   return (
     <>
+      {/* Auth route temporarily disabled
       <Route path="/auth">
         <div className="min-h-screen bg-background">
           <Auth />
         </div>
       </Route>
+      */}
       <Layout>
         <Switch>
           <Route path="/welcome">
-            <ProtectedRoute component={Welcome} />
+            <Welcome />
           </Route>
           <Route path="/">
-            <ProtectedRoute component={Welcome} />
+            <Welcome />
           </Route>
           <Route path="/home">
-            <ProtectedRoute component={Home} />
+            <Home />
           </Route>
           <Route path="/workout">
-            <ProtectedRoute component={Workout} />
+            <Workout />
           </Route>
           <Route path="/mypage">
             <ProtectedRoute component={MyPage} />

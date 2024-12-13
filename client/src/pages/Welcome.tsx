@@ -14,15 +14,16 @@ export const Welcome = () => {
   const { isAuthenticated, user } = useAuthStore();
   const [, setLocation] = useLocation();
 
-  useEffect(() => {
-    if (!isAuthenticated) {
-      setLocation('/auth');
-    }
-  }, [isAuthenticated, setLocation]);
+  // Temporarily commented out authentication check
+  // useEffect(() => {
+  //   if (!isAuthenticated) {
+  //     setLocation('/auth');
+  //   }
+  // }, [isAuthenticated, setLocation]);
 
-  if (!isAuthenticated) {
-    return null;
-  }
+  // if (!isAuthenticated) {
+  //   return null;
+  // }
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
