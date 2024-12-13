@@ -118,22 +118,28 @@ export const useWorkoutStore = create<WorkoutState>()(
       toggleTimer: () => {
         const state = get();
         if (state.isRunning) {
-          // タイマーを停止
           if (state.timerId) {
             clearInterval(state.timerId);
           }
-          set({ isRunning: false, timerId: null });
+          set({ 
+            isRunning: false, 
+            timerId: null 
+          });
         } else {
-          // タイマーを開始
           const id = setInterval(() => {
             const currentState = get();
-            if (currentState.remainingTime <= 0) {
-              currentState.switchMode();
-            } else {
+            if (currentState.remainingTime > 0) {
               currentState.tick();
+            } else {
+              currentState.switchMode();
             }
           }, 1000);
-          set({ isRunning: true, isTimerStarted: true, timerId: id });
+
+          set({
+            isRunning: true,
+            isTimerStarted: true,
+            timerId: id
+          });
         }
       },
 
@@ -154,23 +160,17 @@ export const useWorkoutStore = create<WorkoutState>()(
         }));
       },
 
-      tick: () => set((state) => {
-        if (state.remainingTime <= 0) {
-          return state; // 0以下の場合は更新しない
-        }
-        return {
-          remainingTime: state.remainingTime - 1
-        };
-      }),
+      tick: () => set((state) => ({
+        remainingTime: Math.max(0, state.remainingTime - 1)
+      })),
+
       switchMode: () => set((state) => {
-        if (state.currentSet > state.sets) {
-          // 全セット終了時
+        if (state.currentSet >= state.sets && !state.isRest) {
           if (state.timerId) {
             clearInterval(state.timerId);
           }
           return {
             isRunning: false,
-            isTimerStarted: false,
             timerId: null,
             currentSet: 1,
             isRest: false,
@@ -181,14 +181,12 @@ export const useWorkoutStore = create<WorkoutState>()(
 
         const isRest = !state.isRest;
         const currentSet = isRest ? state.currentSet : state.currentSet + 1;
-        
-        // メッセージを更新
-        state.updateTrainerMessage();
-        
+        const newRemainingTime = (isRest ? state.restTime : state.exerciseTime);
+
         return {
           isRest,
           currentSet,
-          remainingTime: (isRest ? state.restTime : state.exerciseTime),
+          remainingTime: newRemainingTime,
           isRunning: true,
         };
       }),
