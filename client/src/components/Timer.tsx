@@ -1,13 +1,7 @@
 import { useState, useRef, useEffect } from "react";
-import { Clock } from "lucide-react";
+import { Clock, Pause, Play, RotateCcw, Volume2, Coffee, User, CheckSquare, GripVertical, PartyPopper, Pencil } from "lucide-react";
 import { useDiaryStore, type DiaryEntry } from "../lib/diaryStore";
-// ビデオ要素の参照のための型定義
-type VideoRef = {
-  focus: HTMLVideoElement | null;
-  break: HTMLVideoElement | null;
-};
 import { Task } from "../lib/store";
-import { Pause, Play, RotateCcw, Volume2, Coffee, User, CheckSquare, GripVertical, PartyPopper, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -30,6 +24,108 @@ import { AvatarSelectDialog } from "./AvatarSelectDialog";
 import { Settings } from "./Settings";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import { AnimatePresence, motion } from "framer-motion";
+
+// 集中時間用コメントリスト
+const focusComments: string[] = [
+  "その集中、まるで光を集めるレンズだよ！",
+  "よし、そのまま突き進もう！",
+  "今の勢いを大切に、あともう少し！",
+  "いい流れだね、そのペースを守ろう！",
+  "視線は目標へ一直線、ブレない姿がカッコいい！",
+  "頭の中がクリアになってきたね、その調子！",
+  "心が整っているよ、その集中は本物だ！",
+  "焦らず丁寧に進めていこう、今がその時！",
+  "この一瞬に全力を注げば、成果は後からついてくる！",
+  "君の努力が、今まさに形になりつつあるよ！",
+  "周りを気にせず、自分のペースでいこう！",
+  "いいね、その意志の強さを信じて！",
+  "明確なゴールが見えてきた、そのまま攻めよう！",
+  "自分との対話に没頭できている、素晴らしい！",
+  "一気に山を登るような迫力を感じるよ！",
+  "深呼吸して、次の一手を確実に踏み出そう！",
+  "その手元、その思考、すべてがゴールへ繋がってる！",
+  "目の前の課題はもうすぐクリアできそうだ！",
+  "迷いが消えた集中の中、才能が花開く！",
+  "安定したリズムが心地いい、そのまま進め！",
+  "結果は後からついてくる、今は過程に没頭だ！",
+  "軸がぶれない、その集中こそ最高の武器だ！",
+  "見えているね、目標への一直線が！",
+  "その地道な一歩が大いなる前進になる。",
+  "頭の中が整理されて、クリアな思考が輝いている！",
+  "わずかな雑念も、今の君には入る隙がない！",
+  "この時のために準備してきた、今がその出番だ！",
+  "自信を胸に、ラストスパートだ！",
+  "いい感じだ、もうひと踏ん張りしよう！",
+  "いける！この集中が君を高みへ導く！",
+];
+
+// 休憩時間用コメントリスト
+const breakComments: string[] = [
+  "お疲れ様、まずは深呼吸でリセットしよう。",
+  "ちょっと肩の力を抜いて、体をほぐそう。",
+  "よくやった分、今は心と頭をほどいてあげて。",
+  "短い休息が次へのガソリンになるよ。",
+  "一息ついて、頭の中をスッキリさせよう。",
+  "この休憩で、また前進する力が生まれる。",
+  "脳をクールダウンさせて、次へ備えよう。",
+  "頑張った自分に少しのご褒美を。",
+  "目を閉じて、意識を解放してみて。",
+  "小さな休みが、大きな成果へと繋がる。",
+  "気持ちをリセットして、また集中できるよ。",
+  "軽くストレッチして、体と頭を解放しよう。",
+  "少し歩いて、体に新鮮な空気を通そう。",
+  "コーヒーでも、お茶でも、好きな飲み物で一服を。",
+  "緊張を手放す時間、それが今。",
+  "このひとときが、次の集中をもっと強くする。",
+  "成果を噛みしめながら、心を穏やかに。",
+  "風通りを良くして、新たな発想を迎えよう。",
+  "静かな瞬間が、次の行動に灯りをともす。",
+  "ゆっくりした呼吸で、頭を空っぽにしよう。",
+  "今はただ、何も考えずに身体を休めて。",
+  "心身をリラックスさせて、新鮮なスタートを。",
+  "この短い休みが、次の勝利の下地になる。",
+  "少し遠くを見て、目と心をほぐそう。",
+  "頑張った記憶を噛みしめて、次への活力に。",
+  "耳をすまして、静かな自分を感じて。",
+  "頭の中に余白を作って、次へ備えよう。",
+  "疲れを感じるのは成長の証、今は癒やしの時間だ。",
+  "自分をいたわることも、成功には欠かせない要素だ。",
+  "さあ、次に踏み出すためのエネルギーを充電しよう。",
+];
+
+// 終了ダイアログ用コメントリスト
+const completionComments: string[] = [
+  "集中できた時間が、しっかり成果につながりましたね。",
+  "今日の積み重ねが、明日以降の前進に生かされますよ。",
+  "ご自分を誇れる取り組みでしたね。",
+  "ひとつひとつ確実に前へ進んでいるのが感じられます。",
+  "努力の結晶が今、確かな達成感となっておりますね。",
+  "ご自身のペースを大切にしながら、よく頑張られました。",
+  "短い時間にもしっかり集中できたことは大きな一歩です。",
+  "地道な取り組みが、着実にあなたを支えていますね。",
+  "静かな意志をもって取り組まれた姿勢が素晴らしかったです。",
+  "日々の継続が、確かな成長へとつながっていますね。",
+  "少しずつ積み上げた努力が、見えない力になっていきます。",
+  "本当にお疲れ様でした。ご自身に優しく、次へつなげましょう。",
+  "区切りをしっかりつけて、ご自分を労わることも大切ですね。",
+  "毎回の積み重ねが、新たな可能性を開いていくでしょう。",
+  "ここまでしっかり取り組まれたこと、誇りに思ってください。",
+  "丁寧な集中時間が、あなたの自信となって蓄積されています。",
+  "小さな前進が大きな成果への道標となるはずです。",
+  "落ち着いて続けられた分、確かな前向きさが育っていますね。",
+  "しっかりと目標に向き合う姿は、とても素敵でした。",
+  "あなたの努力が、一歩ずつ理想に近づけていますよ。",
+  "ここで得た集中力は、今後の大きな財産となるでしょう。",
+  "一度に大きく進めずとも、確かな前進が見て取れますね。",
+  "達成感を胸に、次回も笑顔で取り組めそうですね。",
+  "今日積んだ一歩が、明日をさらに明るくしてくれます。",
+  "あなたの粘り強さが、確実に自信へと変わっていくでしょう。",
+  "穏やかな集中が、心地よい達成感に繋がりましたね。",
+  "一日の締めくくりにふさわしい取り組みでした。",
+  "努力を重ねることが、確かな手応えを生み出しています。",
+  "この集中時間を重ねるほど、理想との距離が縮まりますね。",
+  "本日の成果を胸に、また新たな目標に向かっていけますよ。",
+];
 
 const CrackerIcon = () => (
   <motion.div
@@ -70,6 +166,12 @@ export const Timer = () => {
   const [achievements, setAchievements] = useState('');
   const [failures, setFailures] = useState('');
   const [challenges, setChallenges] = useState('');
+  
+  // コメント用の状態変数
+  const [currentComment, setCurrentComment] = useState<string>("");
+
+  // 終了ダイアログ用コメントの状態変数
+  const [completionComment, setCompletionComment] = useState<string>("");
 
   // Storeからの変数取得
   const { 
@@ -103,7 +205,7 @@ export const Timer = () => {
 
   // Refの設定
   const svgRef = useRef<SVGSVGElement>(null);
-  const videoRef = useRef<VideoRef>({ focus: null, break: null });
+  const videoRef = useRef<{ focus: HTMLVideoElement | null, break: HTMLVideoElement | null }>({ focus: null, break: null });
   const prevRemainingTimeRef = useRef<number>(remainingTime);
 
   const { addEntry } = useDiaryStore();
@@ -130,6 +232,9 @@ export const Timer = () => {
       setAchievements('');
       setFailures('');
       setChallenges('');
+    }
+    if (!open) {
+      setCompletionComment('');
     }
     setShowCompletionDialog(open);
   };
@@ -262,6 +367,8 @@ export const Timer = () => {
   useEffect(() => {
     if (isTimerCompleted) {
       setShowCompletionDialog(true);
+      const randomIndex = Math.floor(Math.random() * completionComments.length);
+      setCompletionComment(completionComments[randomIndex]);
     }
   }, [isTimerCompleted]);
 
@@ -347,6 +454,19 @@ export const Timer = () => {
   const handleTouchEnd = () => {
     setIsDragging(false);
   };
+
+  // コメントの選択ロジック
+  useEffect(() => {
+    if (isBreak) {
+      // 休憩時間のコメントをランダムに選択
+      const randomIndex = Math.floor(Math.random() * breakComments.length);
+      setCurrentComment(breakComments[randomIndex]);
+    } else {
+      // 集中時間のコメントをランダムに選択
+      const randomIndex = Math.floor(Math.random() * focusComments.length);
+      setCurrentComment(focusComments[randomIndex]);
+    }
+  }, [isBreak]);
 
   if (!isTimerStarted) {
     return <Settings />;
@@ -569,7 +689,7 @@ export const Timer = () => {
               <div className="relative mt-16">
                 <div className="absolute -top-14 left-1/2 transform -translate-x-1/2 bg-white p-2 rounded-lg shadow-lg">
                   <div className="relative">
-                    <p className="text-sm">{isBreak ? "良い休憩を！" : "今日も頑張ろう！"}</p>
+                    <p className="text-sm">{currentComment}</p>
                     <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-8 border-r-8 border-t-8 border-l-transparent border-r-transparent border-t-white"></div>
                   </div>
                 </div>
@@ -788,7 +908,7 @@ export const Timer = () => {
           </DialogHeader>
           <div className="p-4 space-y-3">
             <PartyPopper className="w-12 h-12 mx-auto text-green-500" />
-            <p className="text-lg">今日も一日頑張りましたね！</p>
+            <p className="text-lg">{completionComment}</p>
             <p className="text-sm text-gray-600">
               {sets}セット × {focusTime}分 の集中時間を達成しました
             </p>
