@@ -32,6 +32,18 @@ const ProgressDisplay: FC<ProgressDisplayProps> = ({
 }) => {
   const completedTrophies = Array(currentSet - 1).fill(0);
   
+  // 関数: 配列を指定したサイズで分割
+  const chunkArray = (array: any[], size: number) => {
+    const result = [];
+    for (let i = 0; i < array.length; i += size) {
+      result.push(array.slice(i, i + size));
+    }
+    return result;
+  };
+
+  // トロフィーを10個ずつのチャンクに分割
+  const trophyChunks = chunkArray(completedTrophies, 10);
+
   return (
     <div className="relative h-64 w-full">
       <div className="absolute inset-0 flex items-center justify-center">
@@ -60,16 +72,14 @@ const ProgressDisplay: FC<ProgressDisplayProps> = ({
           <div className="text-lg text-gray-500 mb-2">
             {currentSet}/{sets}セット
           </div>
-          <div className="flex justify-center space-x-2">
-            {completedTrophies.map((_, index) => (
-              <svg
-                key={index}
-                className="w-6 h-6 text-yellow-500"
-                fill="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path d="M5 3h14l1 2v2h-4.5l-.5-1h-6l-.5 1H4V5l1-2zm3 7h8v11H8V10z"/>
-              </svg>
+          {/* トロフィーアイコンの表示をGridレイアウトに変更 */}
+          <div className="flex flex-col items-center">
+            {trophyChunks.map((chunk, chunkIndex) => (
+              <div key={chunkIndex} className="grid grid-cols-10 gap-2 mb-2 w-full">
+                {chunk.map((_, index) => (
+                  <Trophy key={index} className="w-6 h-6 text-yellow-500" />
+                ))}
+              </div>
             ))}
           </div>
         </div>
@@ -77,6 +87,7 @@ const ProgressDisplay: FC<ProgressDisplayProps> = ({
     </div>
   );
 };
+
 export const Workout = () => {
   const [, setLocation] = useLocation();
   const { user } = useAuthStore();
@@ -345,6 +356,8 @@ export const Workout = () => {
               <Button onClick={() => {
                 if (editingExercise) {
                   if (newExercise.trim()) {
+                    // 編集の場合は既存のエクササイズを更新
+                    removeExercise(editingExercise.id);
                     addExercise({
                       ...editingExercise,
                       name: newExercise.trim()
