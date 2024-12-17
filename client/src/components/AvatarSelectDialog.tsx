@@ -11,7 +11,18 @@ import { useStore } from "../lib/store";
 
 const AVATAR_OPTIONS = [
   { id: 'none', label: 'なし' },
-  { id: 'bone-knight', label: 'ボーンナイト' }
+  { id: 'ShisouSigurd', label: '屍装シグルド' },
+  { id: 'HakuchouMelva', label: '白蝶メルヴァ' },
+  { id: 'YugetsuRosaria', label: '幽月ロザリア' },
+  { id: 'YoumonArador', label: '妖紋アラドール' },
+  { id: 'Kurogamaru', label: '黒牙丸' },
+  { id: 'ChuusaNoel', label: '宙彩ノエル' },
+  { id: 'ShidenKagura', label: '紫電カグラ' },
+  { id: 'SouuLuxel', label: '蒼羽リュクセル' },
+  { id: 'MetalcoreZX', label: 'メタルコアZX' },
+  { id: 'ShinyoiAquva', label: '深宵アクヴァ' },
+  { id: 'FuwariBerry', label: 'ふわりベリィ' },
+  { id: 'KakugaRenji', label: '赫牙蓮二' }
 ];
 
 interface AvatarSelectDialogProps {
@@ -58,24 +69,27 @@ export const AvatarSelectDialog: React.FC<AvatarSelectDialogProps> = ({
           </div>
         </DialogHeader>
         <div className="flex flex-col gap-6 px-6 py-2">
-          <div className="grid gap-4">
-            {AVATAR_OPTIONS.map((avatar) => (
-              <Button
-                key={avatar.id}
-                variant={selectedAvatar === avatar.id ? "default" : "outline"}
-                className={`${
-                  selectedAvatar === avatar.id 
-                    ? 'bg-purple-500 hover:bg-purple-600 text-white' 
-                    : 'hover:text-purple-500'
-                }`}
-                onClick={() => {
-                  setSelectedAvatar(avatar.id);
-                  onOpenChange(false);
-                }}
-              >
-                {avatar.label}
-              </Button>
-            ))}
+          <div className="grid grid-cols-3 gap-4">
+            {AVATAR_OPTIONS.map((avatar) => {
+              const isSelected = selectedAvatar === avatar.id;
+
+              return (
+                <Button
+                  key={avatar.id}
+                  variant={isSelected ? "default" : "outline"}
+                  className={`
+                    text-sm whitespace-normal break-all
+                    ${isSelected ? 'bg-purple-500 hover:bg-purple-600 text-white' : 'hover:text-purple-500'}
+                  `}
+                  onClick={() => {
+                    setSelectedAvatar(avatar.id);
+                    onOpenChange(false);
+                  }}
+                >
+                  {avatar.label}
+                </Button>
+              );
+            })}
           </div>
         </div>
       </DialogContent>

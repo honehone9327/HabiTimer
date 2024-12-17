@@ -35,7 +35,7 @@ interface PomodoroState {
   displayMode: 'audio' | 'video';
   tasks: Task[];
   points: number;
-  timerId: number | null; // 修正箇所
+  timerId: number | null; 
   audioElement: HTMLAudioElement | null;
   timerHistory: TimerHistory[];
   isTimerCompleted: boolean;
@@ -98,11 +98,12 @@ export const useStore = create<PomodoroState>()(
       goal: '',
       selectedMusic: 'なし',
       selectedBreakMusic: 'なし',
-      selectedAvatar: 'default',
+      // デフォルトのアバターは 'none' に変更
+      selectedAvatar: 'none',
       displayMode: 'audio' as const,
       tasks: [],
       points: 0,
-      timerId: null, // 初期値は null
+      timerId: null, 
       audioElement: null,
       timerHistory: [],
       isTimerCompleted: false,
@@ -147,7 +148,7 @@ export const useStore = create<PomodoroState>()(
             timerId: null,
           });
         } else {
-          const id = window.setInterval(() => { // window.setIntervalを使用
+          const id = window.setInterval(() => {
             const currentState = get();
             if (currentState.remainingTime > 0) {
               currentState.tick();
@@ -226,7 +227,7 @@ export const useStore = create<PomodoroState>()(
       addTask: (task) => set((state) => ({ tasks: [...state.tasks, task] })),
       removeTask: (id) => set((state) => ({ tasks: state.tasks.filter(task => task.id !== id) })),
       toggleTaskComplete: (id) => set((state) => {
-        const newTasks = state.tasks.map(task => 
+        const newTasks = state.tasks.map(task =>
           task.id === id ? { ...task, completed: !task.completed } : task
         );
         if (newTasks.find(t => t.id === id)?.completed) {
@@ -290,10 +291,22 @@ export const useStore = create<PomodoroState>()(
               }
             })(),
             avatar: (() => {
+              // ここでアバターIDをラベルへ変換
               switch(state.selectedAvatar) {
-                case 'bone-knight': return 'ボーンナイト';
                 case 'none': return 'なし';
-                default: return state.selectedAvatar;
+                case 'ShisouSigurd': return '屍装シグルド（しそうシグルド）';
+                case 'HakuchouMelva': return '白蝶メルヴァ（はくちょうメルヴァ）';
+                case 'YugetsuRosaria': return '幽月ロザリア（ゆうげつロザリア）';
+                case 'YoumonArador': return '妖紋アラドール（ようもんアラドール）';
+                case 'Kurogamaru': return '黒牙丸（くろがまる）';
+                case 'ChuusaNoel': return '宙彩ノエル（ちゅうさいノエル）';
+                case 'ShidenKagura': return '紫電カグラ（しでんカグラ）';
+                case 'SouuLuxel': return '蒼羽リュクセル（そううリュクセル）';
+                case 'MetalcoreZX': return 'メタルコアZX（メタルコアゼットエックス）';
+                case 'ShinyoiAquva': return '深宵アクヴァ（しんよいアクヴァ）';
+                case 'FuwariBerry': return 'ふわりベリィ（ふわりベリィ）';
+                case 'KakugaRenji': return '赫牙蓮二（かくがれんじ）';
+                default: return 'なし';
               }
             })()
           },
@@ -324,7 +337,12 @@ export const useStore = create<PomodoroState>()(
           sets: history.completedSets,
           selectedMusic: history.focusMusic,
           selectedBreakMusic: history.breakMusic,
-          selectedAvatar: history.avatar,
+          // ヒストリー適用時のアバターは、history.avatar に従うが、もしhistoryから復元する場合は要調整
+          // ここではそのままhistory.avatarを適用することとする
+          // ただしhistory.avatarはラベルであるため、IDへ変換が必要な場合あり。
+          // 今回は元々がラベルから復元するケースが不明なため、そのまま適用。
+          // 適用可能なIDがない場合は 'none' にしておく。
+          selectedAvatar: 'none',
           remainingTime: validFocusTime * 60
         });
       },

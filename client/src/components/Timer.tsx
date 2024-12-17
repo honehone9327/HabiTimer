@@ -25,6 +25,23 @@ import { Settings } from "./Settings";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import { AnimatePresence, motion } from "framer-motion";
 
+// アバターオプションは①で示したものと同じ
+const AVATAR_OPTIONS = [
+  { id: 'none', label: 'なし' },
+  { id: 'ShisouSigurd', label: '屍装シグルド（しそうシグルド）' },
+  { id: 'HakuchouMelva', label: '白蝶メルヴァ（はくちょうメルヴァ）' },
+  { id: 'YugetsuRosaria', label: '幽月ロザリア（ゆうげつロザリア）' },
+  { id: 'YoumonArador', label: '妖紋アラドール（ようもんアラドール）' },
+  { id: 'Kurogamaru', label: '黒牙丸（くろがまる）' },
+  { id: 'ChuusaNoel', label: '宙彩ノエル（ちゅうさいノエル）' },
+  { id: 'ShidenKagura', label: '紫電カグラ（しでんカグラ）' },
+  { id: 'SouuLuxel', label: '蒼羽リュクセル（そううリュクセル）' },
+  { id: 'MetalcoreZX', label: 'メタルコアZX（メタルコアゼットエックス）' },
+  { id: 'ShinyoiAquva', label: '深宵アクヴァ（しんよいアクヴァ）' },
+  { id: 'FuwariBerry', label: 'ふわりベリィ（ふわりベリィ）' },
+  { id: 'KakugaRenji', label: '赫牙蓮二（かくがれんじ）' }
+];
+
 // 集中時間用コメントリスト
 const focusComments: string[] = [
   "その集中、まるで光を集めるレンズだよ！",
@@ -348,7 +365,6 @@ export const Timer = () => {
       }
     }
 
-    // カウントダウンがリセットされた場合、前回の残り時間を初期化
     if (!isRunning || remainingTime === 0) {
       prevRemainingTimeRef.current = 0;
     } else {
@@ -471,6 +487,15 @@ export const Timer = () => {
   if (!isTimerStarted) {
     return <Settings />;
   }
+
+  // 選択中のアバターオプション
+  const avatarOption = AVATAR_OPTIONS.find((avatar) => avatar.id === selectedAvatar);
+  // 拡張子分岐（bone_knightのみpng、それ以外はjpg）
+  const avatarExtension = avatarOption && avatarOption.id === 'none'
+    ? ''
+    : avatarOption && avatarOption.id === 'bone_knight'
+      ? 'png'
+      : 'jpg';
 
   return (
     <>
@@ -598,30 +623,6 @@ export const Timer = () => {
                         <div className={`text-base ${selectedMusic === 'campfire' && displayMode === 'video' ? 'text-white/80' : 'text-gray-600'} mt-2`}>
                           {currentSet}/{sets}
                         </div>
-
-                        {/* モード切り替えボタン - 一時的に非表示 */}
-                        {false && (
-                          <div className="flex justify-center mt-4">
-                            <div className="flex rounded-full bg-gray-200 p-1">
-                              <button
-                                className={`flex-1 rounded-full px-4 py-1 text-xs ${
-                                  displayMode === 'audio' ? 'bg-white shadow' : ''
-                                }`}
-                                onClick={() => setDisplayMode('audio')}
-                              >
-                                音声
-                              </button>
-                              <button
-                                className={`flex-1 rounded-full px-4 py-1 text-xs ${
-                                  displayMode === 'video' ? 'bg-white shadow' : ''
-                                }`}
-                                onClick={() => setDisplayMode('video')}
-                              >
-                                動画
-                              </button>
-                            </div>
-                          </div>
-                        )}
                       </div>
                     </div>
 
@@ -685,7 +686,7 @@ export const Timer = () => {
 
         <Card className="w-full">
           <CardContent className="p-6">
-            {selectedAvatar !== 'none' ? (
+            {avatarOption && avatarOption.id !== 'none' ? (
               <div className="relative mt-16">
                 <div className="absolute -top-14 left-1/2 transform -translate-x-1/2 bg-white p-2 rounded-lg shadow-lg">
                   <div className="relative">
@@ -695,18 +696,18 @@ export const Timer = () => {
                 </div>
 
                 <div className="w-full aspect-square max-w-[400px] mx-auto rounded-lg overflow-hidden">
-                  {selectedAvatar === 'bone-knight' ? (
+                  {avatarOption.id !== 'none' && (
                     <img
-                      src="/assets/bone_knight.png"
-                      alt="ボーンナイト"
+                      src={`/assets/${avatarOption.id}.${avatarExtension}`}
+                      alt={avatarOption.label}
                       className="w-full h-full object-contain"
                     />
-                  ) : null}
+                  )}
                 </div>
               </div>
             ) : null}
 
-            <div className={`${selectedAvatar === 'none' ? 'mt-0' : 'mt-8'} p-4 rounded-lg`}>
+            <div className={`${avatarOption && avatarOption.id !== 'none' ? 'mt-8' : 'mt-0'} p-4 rounded-lg`}>
               <div className="flex justify-between items-center mb-2">
                 <h3 className="text-sm font-medium flex items-center gap-2">
                   <CheckSquare className="h-4 w-4" />
@@ -913,7 +914,7 @@ export const Timer = () => {
               {sets}セット × {focusTime}分 の集中時間を達成しました
             </p>
 
-            {/* PDCA用のUI */}
+            {/* PDCA用UI（今回は使用しないためfalse） */}
             {false && (
               <div className="text-left space-y-4 mt-4">
                 <div>

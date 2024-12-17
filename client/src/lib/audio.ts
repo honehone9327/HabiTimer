@@ -34,10 +34,15 @@ class AudioPlayer {
         artist: artist,
         album: 'Pomodoro Timer',
         artwork: [
-          { src: '/bone_knight.png', sizes: '512x512', type: 'image/png' },
+          // ここはメディアセッションに表示するアートワーク(画像)を指定している
+          // 以前は'/bone_knight.png'をハードコーディングしていたが、
+          // 現在は特定のアバターに依存しない汎用的な画像を指定。
+          // 必要であれば、ここで選択中のアバター画像を反映させることも可能。
+          { src: '/assets/none.png', sizes: '512x512', type: 'image/png' },
         ],
       });
 
+      // メディアコントロール(再生/一時停止)が押されたときに発火するイベント
       navigator.mediaSession.setActionHandler('play', () => {
         console.log('MediaSession play action received');
         const event = new CustomEvent('audioPlayed', { detail: { isBreak } });
@@ -113,7 +118,6 @@ class AudioPlayer {
       const audioSrc = option.audioSrc || option.videoSrc || option.src;
 
       if (displayMode === 'video') {
-        // ビデオモードの処理は変更なし
         const videoElement = document.querySelector(
           `video[data-type="${isBreak ? 'break' : 'focus'}"]`
         ) as HTMLVideoElement;
@@ -178,7 +182,6 @@ class AudioPlayer {
               }
               this.focusAudio = this.createAudioElement(audioSrc, false);
 
-              // AudioContextの設定
               if (this.audioContext) {
                 this.focusAudioSourceNode = this.audioContext.createMediaElementSource(this.focusAudio);
                 this.focusAudioGainNode = this.audioContext.createGain();
@@ -235,7 +238,6 @@ class AudioPlayer {
       this.isProgrammaticChangeFocus = false;
     }
 
-    // GainNodeとSourceNodeの破棄
     if (this.focusAudioGainNode) {
       this.focusAudioGainNode.disconnect();
       this.focusAudioGainNode = null;
@@ -321,11 +323,9 @@ class AudioPlayer {
       const currentTime = this.audioContext.currentTime;
       const endTime = currentTime + duration;
 
-      // 音量をフェードアウト
       this.focusAudioGainNode.gain.setValueAtTime(initialGain, currentTime);
       this.focusAudioGainNode.gain.exponentialRampToValueAtTime(0.001, endTime);
 
-      // フェードアウト後に再生を停止
       const timeout = window.setTimeout(() => {
         if (this.focusAudio) {
           this.focusAudio.pause();
@@ -352,10 +352,8 @@ class AudioPlayer {
 
       await this.ensureAudioContext();
 
-      // 既存のタイムアウトをクリア
       this.stopCountdownBeep();
 
-      // 予報音（440Hz、100ms音 + 900ms無音）を3回再生
       for (let i = 0; i < 3; i++) {
         const timeout = window.setTimeout(() => {
           const beep = this.createBeep(440, 0.1, 0.5);
@@ -364,11 +362,10 @@ class AudioPlayer {
             oscillator.start(this.audioContext!.currentTime);
             oscillator.stop(this.audioContext!.currentTime + 0.1);
           }
-        }, i * 1000); // 1000ms間隔
+        }, i * 1000);
         this.countdownTimeouts.push(timeout);
       }
 
-      // 正報音（880Hz、1000ms音、2000msで直線的に減衰）
       const mainSignalTimeout = window.setTimeout(() => {
         const beep = this.createBeep(880, 3, 0.5, true, 2);
         if (beep) {
@@ -376,7 +373,7 @@ class AudioPlayer {
           oscillator.start(this.audioContext!.currentTime);
           oscillator.stop(this.audioContext!.currentTime + 3);
         }
-      }, 3000); // 予報音の後
+      }, 3000);
 
       this.countdownTimeouts.push(mainSignalTimeout);
 
@@ -397,6 +394,7 @@ class AudioPlayer {
       await this.audioContext.resume();
     }
   }
+
   public playSingleBeep(frequency: number = 880, duration: number = 0.3, volume: number = 0.4) {
     try {
       if (!this.audioContext) {
@@ -426,14 +424,12 @@ class AudioPlayer {
 
       await this.ensureAudioContext();
 
-      // クリーンアップ：既存のタイムアウトをクリア
       this.stopCountdownBeep();
 
-      // シンプルな「ポン」音を700ms間隔で3回再生
-      const frequency = 800; // 時報のような音のための周波数
-      const duration = 0.3; // 音の長さ（0.3秒）
-      const volume = 0.4; // 音量
-      const interval = 700; // 間隔（700ミリ秒）
+      const frequency = 800;
+      const duration = 0.3;
+      const volume = 0.4;
+      const interval = 700;
 
       for (let i = 0; i < 3; i++) {
         const timeout = window.setTimeout(() => {
@@ -460,7 +456,6 @@ class AudioPlayer {
 
       await this.ensureAudioContext();
 
-      // トランジション音（3秒間のフェードアウト）を生成
       const beep = this.createBeep(800, 3, 0.4, true, 3);
       if (beep) {
         const { oscillator } = beep;
