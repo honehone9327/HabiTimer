@@ -1,5 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { audioPlayer } from "../lib/audio";
+import { useEffect } from 'react';
 
 export const TRAINER_MESSAGES = {
   'drill-sergeant': {
@@ -307,10 +309,9 @@ export const useWorkoutStore = create<WorkoutState>()(
             timerId: null 
           });
         } else {
-          // Update the trainer message when the timer starts
           get().updateTrainerMessage();
 
-          const id = window.setInterval(() => { // window.setIntervalを使用
+          const id = window.setInterval(() => {
             const currentState = get();
             if (currentState.remainingTime > 0) {
               currentState.tick();
@@ -331,7 +332,6 @@ export const useWorkoutStore = create<WorkoutState>()(
         const state = get();
         if (state.timerId !== null) {
           clearInterval(state.timerId);
-          // Clear the timer ID immediately to prevent any race conditions
           set({ timerId: null });
         }
         set((state) => ({
@@ -341,15 +341,21 @@ export const useWorkoutStore = create<WorkoutState>()(
           isRest: false,
           remainingTime: state.exerciseTime,
           showCompletionDialog: false,
-          currentMessage: 'トレーニングを始めましょう！', // リセット時に初期メッセージを設定
+          currentMessage: 'トレーニングを始めましょう！',
         }));
       },
 
-      tick: () => set((state) => ({
-        remainingTime: Math.max(0, state.remainingTime - 1)
-      })),
+      tick: () => set((state) => {
+        const newRemainingTime = Math.max(0, state.remainingTime - 1);
+        if (state.isRunning && newRemainingTime === 3) {
+          audioPlayer.playNHKTimeSignal();
+        }
+        return { remainingTime: newRemainingTime };
+      }),
 
       switchMode: () => set((state) => {
+        // ここでtransitionSoundを鳴らしても0秒時点で確実に鳴らしたい場合はuseEffectで補完する
+
         if (state.currentSet >= state.sets && !state.isRest) {
           if (state.timerId !== null) {
             clearInterval(state.timerId);
@@ -361,7 +367,7 @@ export const useWorkoutStore = create<WorkoutState>()(
             isRest: false,
             remainingTime: state.exerciseTime,
             showCompletionDialog: true,
-            currentMessage: 'トレーニングを始めましょう！', // 完了後のメッセージ
+            currentMessage: 'トレーニングを始めましょう！',
           };
         }
 
@@ -369,7 +375,6 @@ export const useWorkoutStore = create<WorkoutState>()(
         const currentSet = isRest ? state.currentSet : state.currentSet + 1;
         const newRemainingTime = (isRest ? state.restTime : state.exerciseTime);
 
-        // 適切なコメントを設定
         const messages = TRAINER_MESSAGES[state.trainerMode as keyof typeof TRAINER_MESSAGES];
         const messageType = isRest ? 'rest' : 'exercise';
         const messageList = messages[messageType];
@@ -399,3 +404,15 @@ export const useWorkoutStore = create<WorkoutState>()(
     }
   )
 );
+
+// ここでuseWorkoutAudioEffectsを同一ファイル内に定義する
+// これで別ファイル不要で、remainingTime === 0 時にtransitionSoundを鳴らすことができます。
+export const useWorkoutAudioEffects = () => {
+  const remainingTime = useWorkoutStore((state) => state.remainingTime);
+
+  useEffect(() => {
+    if (remainingTime === 0) {
+      audioPlayer.playTransitionSound();
+    }
+  }, [remainingTime]);
+};

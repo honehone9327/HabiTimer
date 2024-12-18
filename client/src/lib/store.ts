@@ -294,18 +294,18 @@ export const useStore = create<PomodoroState>()(
               // ここでアバターIDをラベルへ変換
               switch(state.selectedAvatar) {
                 case 'none': return 'なし';
-                case 'ShisouSigurd': return '屍装シグルド（しそうシグルド）';
-                case 'HakuchouMelva': return '白蝶メルヴァ（はくちょうメルヴァ）';
-                case 'YugetsuRosaria': return '幽月ロザリア（ゆうげつロザリア）';
-                case 'YoumonArador': return '妖紋アラドール（ようもんアラドール）';
-                case 'Kurogamaru': return '黒牙丸（くろがまる）';
-                case 'ChuusaNoel': return '宙彩ノエル（ちゅうさいノエル）';
-                case 'ShidenKagura': return '紫電カグラ（しでんカグラ）';
-                case 'SouuLuxel': return '蒼羽リュクセル（そううリュクセル）';
-                case 'MetalcoreZX': return 'メタルコアZX（メタルコアゼットエックス）';
-                case 'ShinyoiAquva': return '深宵アクヴァ（しんよいアクヴァ）';
-                case 'FuwariBerry': return 'ふわりベリィ（ふわりベリィ）';
-                case 'KakugaRenji': return '赫牙蓮二（かくがれんじ）';
+                case 'ShisouSigurd': return '屍装シグルド';
+                case 'HakuchouMelva': return '白蝶メルヴァ';
+                case 'YugetsuRosaria': return '幽月ロザリア';
+                case 'YoumonArador': return '妖紋アラドール';
+                case 'Kurogamaru': return '黒牙丸';
+                case 'ChuusaNoel': return '宙彩ノエル';
+                case 'ShidenKagura': return '紫電カグラ';
+                case 'SouuLuxel': return '蒼羽リュクセル';
+                case 'MetalcoreZX': return 'メタルコアZX';
+                case 'ShinyoiAquva': return '深宵アクヴァ';
+                case 'FuwariBerry': return 'ふわりベリィ';
+                case 'KakugaRenji': return '赫牙蓮二';
                 default: return 'なし';
               }
             })()

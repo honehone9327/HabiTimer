@@ -32,7 +32,6 @@ const ProgressDisplay: FC<ProgressDisplayProps> = ({
 }) => {
   const completedTrophies = Array(currentSet - 1).fill(0);
   
-  // 関数: 配列を指定したサイズで分割
   const chunkArray = (array: any[], size: number) => {
     const result = [];
     for (let i = 0; i < array.length; i += size) {
@@ -41,7 +40,6 @@ const ProgressDisplay: FC<ProgressDisplayProps> = ({
     return result;
   };
 
-  // トロフィーを10個ずつのチャンクに分割
   const trophyChunks = chunkArray(completedTrophies, 10);
 
   return (
@@ -72,7 +70,6 @@ const ProgressDisplay: FC<ProgressDisplayProps> = ({
           <div className="text-lg text-gray-500 mb-2">
             {currentSet}/{sets}セット
           </div>
-          {/* トロフィーアイコンの表示をGridレイアウトに変更 */}
           <div className="flex flex-col items-center">
             {trophyChunks.map((chunk, chunkIndex) => (
               <div key={chunkIndex} className="grid grid-cols-10 gap-2 mb-2 w-full">
@@ -130,10 +127,7 @@ export const Workout = () => {
 
   const { formatTime } = useWorkout();
   
-  const currentMaxTime = remainingTime;
   const progress = (remainingTime / (isRest ? restTime : exerciseTime)) * 100;
-  const circumference = 2 * Math.PI * 45;
-  const dashOffset = (circumference * (100 - progress)) / 100;
 
   const handleAddExercise = () => {
     if (newExercise.trim()) {
@@ -155,7 +149,6 @@ export const Workout = () => {
             <button
               onClick={() => {
                 if (isRunning) {
-                  // タイマー実行中は確認ダイアログを表示
                   if (window.confirm('タイマーを終了して戻りますか？')) {
                     resetTimer();
                     setLocation('/');
@@ -170,7 +163,6 @@ export const Workout = () => {
             </button>
             <h1 className="text-2xl font-bold">ワークアウト</h1>
           </div>
-          
         </header>
 
         {isTimerStarted ? (
@@ -182,7 +174,7 @@ export const Workout = () => {
 
               <div className="w-full max-w-md mx-auto mb-6">
                 <ProgressDisplay 
-                  progress={(remainingTime / (isRest ? restTime : exerciseTime)) * 100}
+                  progress={progress}
                   remainingTime={remainingTime}
                   currentSet={currentSet}
                   sets={sets}
@@ -192,7 +184,6 @@ export const Workout = () => {
               </div>
 
               <div className="flex justify-center space-x-4 mb-4">
-                {/* 一時停止/再開ボタン */}
                 <Button
                   variant="outline"
                   size="icon"
@@ -200,8 +191,6 @@ export const Workout = () => {
                 >
                   {isRunning ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
                 </Button>
-                
-                {/* リセットボタン */}
                 <Button
                   variant="outline"
                   size="icon"
@@ -238,7 +227,7 @@ export const Workout = () => {
                     value={[exerciseTime]}
                     onValueChange={(value) => setExerciseTime(value[0])}
                     min={10}
-                    max={180}
+                    max={600}
                     step={5}
                   />
                   <div className="text-right text-sm text-gray-600">{exerciseTime}秒</div>
@@ -253,7 +242,7 @@ export const Workout = () => {
                     value={[restTime]}
                     onValueChange={(value) => setRestTime(value[0])}
                     min={5}
-                    max={60}
+                    max={300}
                     step={5}
                   />
                   <div className="text-right text-sm text-gray-600">{restTime}秒</div>
@@ -323,7 +312,6 @@ export const Workout = () => {
                   </div>
                 </div>
 
-                {/* トレーナーモード選択 */}
                 <div className="flex justify-center space-x-4 mb-4">
                   <TrainerButton />
                 </div>
@@ -356,7 +344,6 @@ export const Workout = () => {
               <Button onClick={() => {
                 if (editingExercise) {
                   if (newExercise.trim()) {
-                    // 編集の場合は既存のエクササイズを更新
                     removeExercise(editingExercise.id);
                     addExercise({
                       ...editingExercise,

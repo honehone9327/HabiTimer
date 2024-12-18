@@ -28,18 +28,18 @@ import { AnimatePresence, motion } from "framer-motion";
 // アバターオプションは①で示したものと同じ
 const AVATAR_OPTIONS = [
   { id: 'none', label: 'なし' },
-  { id: 'ShisouSigurd', label: '屍装シグルド（しそうシグルド）' },
-  { id: 'HakuchouMelva', label: '白蝶メルヴァ（はくちょうメルヴァ）' },
-  { id: 'YugetsuRosaria', label: '幽月ロザリア（ゆうげつロザリア）' },
-  { id: 'YoumonArador', label: '妖紋アラドール（ようもんアラドール）' },
-  { id: 'Kurogamaru', label: '黒牙丸（くろがまる）' },
-  { id: 'ChuusaNoel', label: '宙彩ノエル（ちゅうさいノエル）' },
-  { id: 'ShidenKagura', label: '紫電カグラ（しでんカグラ）' },
-  { id: 'SouuLuxel', label: '蒼羽リュクセル（そううリュクセル）' },
-  { id: 'MetalcoreZX', label: 'メタルコアZX（メタルコアゼットエックス）' },
-  { id: 'ShinyoiAquva', label: '深宵アクヴァ（しんよいアクヴァ）' },
-  { id: 'FuwariBerry', label: 'ふわりベリィ（ふわりベリィ）' },
-  { id: 'KakugaRenji', label: '赫牙蓮二（かくがれんじ）' }
+  { id: 'ShisouSigurd', label: '屍装シグルド' },
+  { id: 'HakuchouMelva', label: '白蝶メルヴァ' },
+  { id: 'YugetsuRosaria', label: '幽月ロザリア' },
+  { id: 'YoumonArador', label: '妖紋アラドール' },
+  { id: 'Kurogamaru', label: '黒牙丸' },
+  { id: 'ChuusaNoel', label: '宙彩ノエル' },
+  { id: 'ShidenKagura', label: '紫電カグラ' },
+  { id: 'SouuLuxel', label: '蒼羽リュクセル' },
+  { id: 'MetalcoreZX', label: 'メタルコアZX' },
+  { id: 'ShinyoiAquva', label: '深宵アクヴァ' },
+  { id: 'FuwariBerry', label: 'ふわりベリィ' },
+  { id: 'KakugaRenji', label: '赫牙蓮二' }
 ];
 
 // 集中時間用コメントリスト
