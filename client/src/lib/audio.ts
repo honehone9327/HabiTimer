@@ -1,3 +1,5 @@
+// audio.ts または AudioPlayer.ts
+
 import { MUSIC_OPTIONS, BREAK_MUSIC_OPTIONS } from './constants';
 
 class AudioPlayer {
@@ -19,10 +21,25 @@ class AudioPlayer {
   constructor() {
     try {
       this.audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+
+      // ウィンドウがフォーカスを得たときに AudioContext を再開
+      window.addEventListener('focus', this.handleWindowFocus);
+      // ウィンドウのビジビリティが変わったときに AudioContext を再開
+      window.addEventListener('visibilitychange', this.handleVisibilityChange);
     } catch (error) {
       console.error('Web Audio API is not supported in this browser:', error);
     }
   }
+
+  private handleWindowFocus = () => {
+    this.ensureAudioContext();
+  };
+
+  private handleVisibilityChange = () => {
+    if (document.visibilityState === 'visible') {
+      this.ensureAudioContext();
+    }
+  };
 
   private setupMediaSession(isBreak: boolean, displayMode: 'audio' | 'video') {
     if ('mediaSession' in navigator) {
@@ -34,20 +51,16 @@ class AudioPlayer {
         artist: artist,
         album: 'Pomodoro Timer',
         artwork: [
-          // ここはメディアセッションに表示するアートワーク(画像)を指定している
-          // 以前は'/bone_knight.png'をハードコーディングしていたが、
-          // 現在は特定のアバターに依存しない汎用的な画像を指定。
-          // 必要であれば、ここで選択中のアバター画像を反映させることも可能。
           { src: '/assets/none.png', sizes: '512x512', type: 'image/png' },
         ],
       });
 
-      // メディアコントロール(再生/一時停止)が押されたときに発火するイベント
       navigator.mediaSession.setActionHandler('play', () => {
         console.log('MediaSession play action received');
         const event = new CustomEvent('audioPlayed', { detail: { isBreak } });
         window.dispatchEvent(event);
       });
+
       navigator.mediaSession.setActionHandler('pause', () => {
         console.log('MediaSession pause action received');
         const event = new CustomEvent('audioPaused', { detail: { isBreak } });
@@ -84,7 +97,7 @@ class AudioPlayer {
   }
 
   public async play(soundId: string, isBreak: boolean = false, displayMode: 'audio' | 'video') {
-    try {
+    try { // <-- try ブロックを開始
       console.log(`Playing sound: ${soundId}, isBreak: ${isBreak}, mode: ${displayMode}`);
 
       const isSameSound = isBreak
@@ -211,8 +224,8 @@ class AudioPlayer {
           this.setupMediaSession(isBreak, displayMode);
         }
       }
-    } catch (error) {
-      console.error('Audio playback error:', error);
+    } catch (error) { // <-- catch ブロックを追加
+      console.error('Error in play method:', error);
     }
   }
 
@@ -391,7 +404,12 @@ class AudioPlayer {
 
   private async ensureAudioContext() {
     if (this.audioContext?.state === 'suspended') {
-      await this.audioContext.resume();
+      try {
+        await this.audioContext.resume();
+        console.log('AudioContext resumed');
+      } catch (error) {
+        console.error('Error resuming AudioContext:', error);
+      }
     }
   }
 

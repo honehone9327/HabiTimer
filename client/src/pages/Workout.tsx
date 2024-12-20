@@ -1,3 +1,5 @@
+// Workout.tsx
+
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
@@ -45,7 +47,9 @@ const ProgressDisplay: FC<ProgressDisplayProps> = ({
   return (
     <div className="relative h-64 w-full">
       <div className="absolute inset-0 flex items-center justify-center">
-        <div className="w-full h-full bg-green-100 rounded-lg overflow-hidden">
+        <div className={`w-full h-full rounded-lg overflow-hidden ${
+          isRest ? 'bg-blue-100' : 'bg-green-100'
+        }`}>
           <div 
             className={`w-full transition-all duration-1000 ${
               isRest 
@@ -64,7 +68,14 @@ const ProgressDisplay: FC<ProgressDisplayProps> = ({
       
       <div className="absolute inset-0 flex items-center justify-center">
         <div className="text-center z-10 bg-white/80 p-4 rounded-lg">
-          <div className="text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-green-500 to-emerald-500">
+          {/* タイマーテキストのスタイルを条件に基づいて変更 */}
+          <div 
+            className={`text-6xl font-bold bg-clip-text text-transparent ${
+              isRest 
+                ? 'bg-gradient-to-r from-blue-500 to-blue-400' 
+                : 'bg-gradient-to-r from-green-500 to-emerald-500'
+            }`}
+          >
             {formatTime(remainingTime)}
           </div>
           <div className="text-lg text-gray-500 mb-2">
@@ -102,6 +113,7 @@ export const Workout = () => {
   const handleDeleteExercise = (id: string) => {
     setDeleteConfirmId(id);
   };
+  
   const { 
     exerciseTime,
     restTime,

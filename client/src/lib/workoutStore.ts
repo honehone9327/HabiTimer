@@ -273,7 +273,7 @@ export const useWorkoutStore = create<WorkoutState>()(
     (set, get) => ({
       exerciseTime: 30,
       restTime: 10,
-      sets: 30,
+      sets: 5,
       isRunning: false,
       isTimerStarted: false,
       currentSet: 1,
