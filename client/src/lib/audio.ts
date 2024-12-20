@@ -115,7 +115,7 @@ class AudioPlayer {
       const option = options.find((opt) => opt.id === soundId);
       if (!option) return;
 
-      const audioSrc = option.audioSrc || option.videoSrc || option.src;
+      const audioSrc = option.audioSrc || option.videoSrc;
 
       if (displayMode === 'video') {
         const videoElement = document.querySelector(

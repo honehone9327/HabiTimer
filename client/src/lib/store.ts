@@ -279,6 +279,8 @@ export const useStore = create<PomodoroState>()(
                 case 'waves': return '波の音';
                 case 'rain': return '雨の音';
                 case 'forest': return '森の音';
+                case 'river_1': return '川の音(急流)';   
+                case 'fiver_2': return '川の音(静流)';              
                 case 'none': return 'なし';
                 default: return state.selectedMusic;
               }
@@ -286,6 +288,9 @@ export const useStore = create<PomodoroState>()(
             breakMusic: (() => {
               switch(state.selectedBreakMusic) {
                 case 'orgel': return 'オルゴール';
+                case 'piano': return 'ピアノ';
+                case 'cafe_1': return 'カフェ';
+                case 'cafe_2': return 'カフェ（アコギ）';
                 case 'none': return 'なし';
                 default: return state.selectedBreakMusic;
               }
