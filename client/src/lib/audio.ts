@@ -3,6 +3,7 @@
 import { MUSIC_OPTIONS, BREAK_MUSIC_OPTIONS } from './constants';
 
 class AudioPlayer {
+  // 既存のプロパティ
   private currentDisplayMode: 'audio' | 'video' | null = null;
   private currentFocusSoundId: string | null = null;
   private currentBreakSoundId: string | null = null;
@@ -18,9 +19,17 @@ class AudioPlayer {
   private focusAudioSourceNode: MediaElementAudioSourceNode | null = null;
   private focusAudioGainNode: GainNode | null = null;
 
+  // マスターゲインノードの追加
+  private masterGainNode: GainNode | null = null;
+
   constructor() {
     try {
       this.audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+
+      // マスターゲインノードの作成と設定
+      this.masterGainNode = this.audioContext.createGain();
+      this.masterGainNode.gain.setValueAtTime(0.8, this.audioContext.currentTime); // ゲイン値を0.8に設定（必要に応じて調整）
+      this.masterGainNode.connect(this.audioContext.destination);
 
       // ウィンドウがフォーカスを得たときに AudioContext を再開
       window.addEventListener('focus', this.handleWindowFocus);
@@ -195,11 +204,11 @@ class AudioPlayer {
               }
               this.focusAudio = this.createAudioElement(audioSrc, false);
 
-              if (this.audioContext) {
+              if (this.audioContext && this.masterGainNode) {
                 this.focusAudioSourceNode = this.audioContext.createMediaElementSource(this.focusAudio);
                 this.focusAudioGainNode = this.audioContext.createGain();
                 this.focusAudioSourceNode.connect(this.focusAudioGainNode);
-                this.focusAudioGainNode.connect(this.audioContext.destination);
+                this.focusAudioGainNode.connect(this.masterGainNode); // マスターゲインノードに接続
               }
             } else {
               this.focusAudio.src = audioSrc;
@@ -323,7 +332,7 @@ class AudioPlayer {
     }
 
     oscillator.connect(gainNode);
-    gainNode.connect(this.audioContext.destination);
+    gainNode.connect(this.masterGainNode!); // マスターゲインノードに接続
 
     return { oscillator, gainNode };
   }
